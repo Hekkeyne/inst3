@@ -226,7 +226,7 @@ namespace inst3
                 
             }
             int totalves = 0;
-            List<int> totaldlina = new List<int>();
+            List<double> totaldlina = new List<double>();
             for (int i = 1; i < dataGridView2.Rows.Count; i++)
             {
                 for (int j = 1; j < dataGridView2.Columns.Count; j++)
@@ -237,35 +237,37 @@ namespace inst3
                         {
                             if (dataGridView1[dataGridView1.Columns.Count - 1, y].Value is bool bl && bl)
                             {
-                                if (Convert.ToInt32(dataGridView1[j, y].Value) <= Convert.ToInt32(dataGridView1[i, y].Value))
+                                if (Convert.ToInt32(dataGridView1[j, y].Value) >= Convert.ToInt32(dataGridView1[i, y].Value))
                                 {
                                     totalves += Convert.ToInt32(dataGridView1[dataGridView1.Columns.Count - 3, y].Value);
                                 }
                                 if (Convert.ToInt32(dataGridView1[j, y].Value) >= Convert.ToInt32(dataGridView1[i, y].Value))
                                 {
-                                    totaldlina.Add(Convert.ToInt32(dataGridView1[dataGridView1.Columns.Count - 2, y].Value));
+                                    var u = (Math.Abs(Convert.ToInt32(dataGridView1[j, y].Value) - Convert.ToInt32(dataGridView1[i, y].Value))) / (double)(Convert.ToInt32(dataGridView1[dataGridView1.Columns.Count - 2, y].Value));
+                                    totaldlina.Add(u);
                                 }
                             }
                             if (dataGridView1[dataGridView1.Columns.Count - 1, y].Value is bool b && !b)
                             {
-                                if (Convert.ToInt32(dataGridView1[j, y].Value) >= Convert.ToInt32(dataGridView1[i, y].Value))
+                                if (Convert.ToInt32(dataGridView1[j, y].Value) <= Convert.ToInt32(dataGridView1[i, y].Value))
                                 {
                                     totalves += Convert.ToInt32(dataGridView1[dataGridView1.Columns.Count - 3, y].Value);
                                 }
                                 if (Convert.ToInt32(dataGridView1[j, y].Value) <= Convert.ToInt32(dataGridView1[i, y].Value))
                                 {
-                                    totaldlina.Add(Convert.ToInt32(dataGridView1[dataGridView1.Columns.Count - 2, y].Value));
+                                    var u =( Math.Abs(Convert.ToInt32(dataGridView1[j, y].Value) - Convert.ToInt32(dataGridView1[i, y].Value))) / (double)(Convert.ToInt32(dataGridView1[dataGridView1.Columns.Count - 2, y].Value));
+                                    totaldlina.Add(u);
                                 }
                             }
                         }
                         try
                         {
-                            dlina = Convert.ToInt32(dataGridView1[dataGridView1.ColumnCount - 2, i].Value);
+                            dlina = Convert.ToInt32(dataGridView1[dataGridView1.ColumnCount - 2, (i-1)%(dataGridView1.Rows.Count-1)+1].Value);
 
                             totaldlina.Sort((x, y) => y.CompareTo(x));
                             dataGridView2[j, i].Value = (double)totalves / ves;
                             totalves = 0;
-                            dataGridView3[j, i].Value = (double)totaldlina[0] / dlina;
+                            dataGridView3[j, i].Value = (double)totaldlina[0];
                             totaldlina.Clear();
                         }
                         catch { }
@@ -298,9 +300,11 @@ namespace inst3
                     }
                 }
             }
+            yadro = yadro.Distinct<string>().ToList();
             textBox5.Text += $"ядро {yadra}:";
             foreach (string g in yadro)
                 textBox5.Text += $" {g} ";
+            textBox5.Text += "\r\n";
             yadra++;
             f1 = false;
             f2 = false;
