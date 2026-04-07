@@ -181,7 +181,6 @@ namespace inst3
             {
                 try
                 {
-
                     user_ves = user_ves + Convert.ToInt32(dataGridView1[dataGridView1.Columns.Count - 3, i].Value);
                 }
                 catch { MessageBox.Show($"столбец {dataGridView1.Columns.Count - 3} строка {i} странное значение"); return false; }
@@ -237,7 +236,7 @@ namespace inst3
                         {
                             if (dataGridView1[dataGridView1.Columns.Count - 1, y].Value is bool bl && bl)
                             {
-                                if (Convert.ToInt32(dataGridView1[j, y].Value) >= Convert.ToInt32(dataGridView1[i, y].Value))
+                                if (Convert.ToInt32(dataGridView1[j, y].Value) <= Convert.ToInt32(dataGridView1[i, y].Value))
                                 {
                                     totalves += Convert.ToInt32(dataGridView1[dataGridView1.Columns.Count - 3, y].Value);
                                 }
@@ -249,7 +248,7 @@ namespace inst3
                             }
                             if (dataGridView1[dataGridView1.Columns.Count - 1, y].Value is bool b && !b)
                             {
-                                if (Convert.ToInt32(dataGridView1[j, y].Value) <= Convert.ToInt32(dataGridView1[i, y].Value))
+                                if (Convert.ToInt32(dataGridView1[j, y].Value) >= Convert.ToInt32(dataGridView1[i, y].Value))
                                 {
                                     totalves += Convert.ToInt32(dataGridView1[dataGridView1.Columns.Count - 3, y].Value);
                                 }
@@ -265,9 +264,9 @@ namespace inst3
                             dlina = Convert.ToInt32(dataGridView1[dataGridView1.ColumnCount - 2, (i-1)%(dataGridView1.Rows.Count-1)+1].Value);
 
                             totaldlina.Sort((x, y) => y.CompareTo(x));
-                            dataGridView2[j, i].Value = (double)totalves / ves;
+                            dataGridView2[j,i].Value = (double)totalves / ves;
                             totalves = 0;
-                            dataGridView3[j, i].Value = (double)totaldlina[0];
+                            dataGridView3[j,i].Value = (double)totaldlina[0];
                             totaldlina.Clear();
                         }
                         catch { }
@@ -289,14 +288,28 @@ namespace inst3
             int rc = dataGridView2.ColumnCount;
             for (int i = 1; i < rc; i++)
             {
+                bool dominated = false;
                 for (int j = 1; j < rc; j++)
                 {
+                    if (i == j) continue;
                     if (dataGridView2[i, j].Value != "*")
                     {
-                        if (Convert.ToDouble(dataGridView2[i, j].Value) < Z || Convert.ToDouble(dataGridView3[i, j].Value) > U)
+                        if (Convert.ToDouble(dataGridView2[i, j].Value) >= Z && Convert.ToDouble(dataGridView3[i, j].Value) <= U)
                         {
-                            yadro.Add(Convert.ToString(dataGridView2[i, 0].Value));
+                            dominated = true; 
+                            break;
                         }
+                    }
+                }
+                if (dominated)
+                {
+                    yadro.Add(Convert.ToString(dataGridView2[i, 0].Value));
+                    for (int h = 1; h < dataGridView2.ColumnCount; h++)
+                    {
+                        dataGridView2[h, i].Value = "*";
+                        dataGridView3[h, i].Value = "*";
+                        dataGridView2[i,h].Value = "*";
+                        dataGridView3[i, h].Value = "*";
                     }
                 }
             }
@@ -310,6 +323,7 @@ namespace inst3
             f2 = false;
             textBox3.Enabled = !f1;
             textBox4.Enabled = !f2;
+            yadro.Clear();
         }
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
